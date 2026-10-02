@@ -1,0 +1,13 @@
+#!/bin/bash
+set -euxo pipefail
+
+# AL2023 は既定で journald のみで /var/log/messages が無いため rsyslog を入れる
+dnf install -y rsyslog amazon-cloudwatch-agent
+systemctl enable --now rsyslog
+
+# auditd は AL2023 で既定で有効。念のため起動を保証する
+systemctl enable --now auditd
+
+/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+  -a fetch-config -m ec2 -s \
+  -c "ssm:${config_parameter_name}"
