@@ -33,7 +33,9 @@ resource "aws_instance" "this" {
   iam_instance_profile   = aws_iam_instance_profile.ec2.name
 
   user_data = templatefile("${path.module}/user_data.sh.tftpl", {
-    config_parameter_name = aws_ssm_parameter.cloudwatch_agent_config.name
+    # ロググループ名はリソースから渡し、user_data 内の設定と名前がずれないようにする
+    syslog_log_group_name = aws_cloudwatch_log_group.syslog.name
+    audit_log_group_name  = aws_cloudwatch_log_group.audit.name
   })
   user_data_replace_on_change = true
 
@@ -55,7 +57,7 @@ resource "aws_instance" "this" {
     ignore_changes = [ami]
   }
 
-  # エージェント起動時にロール・ロググループ・設定が揃っているようにする
+  # エージェント起動時にロールとロググループが揃っているようにする
   depends_on = [
     aws_iam_role_policy_attachment.cloudwatch_agent,
     aws_iam_role_policy_attachment.ssm_core,

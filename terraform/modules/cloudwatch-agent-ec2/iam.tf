@@ -22,7 +22,7 @@ resource "aws_iam_role_policy_attachment" "ssm_core" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
-# ログ送信と、SSM パラメータ（AmazonCloudWatch-*）からの設定読み込み
+# CloudWatch Logs へのログ送信
 resource "aws_iam_role_policy_attachment" "cloudwatch_agent" {
   role       = aws_iam_role.ec2.name
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
